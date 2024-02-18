@@ -7,6 +7,7 @@ RESTful API: Develop a RESTful API architecture for seamless communication betwe
 Middleware: Utilize middleware functions for tasks such as input validation, error handling, and authentication verification.
 Database Integration: Integrate with a MongoDB database to store product information, user data, and order details securely.
 and another features i will add in next days  
+
 Technologies Used:
 
 Node.js: Backend runtime environment for JavaScript.
