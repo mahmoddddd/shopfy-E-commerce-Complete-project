@@ -1,4 +1,4 @@
-Node.js eCommerce backend: Manage products, authenticate users, process orders. Built with Node.js, Express, MongoDB. RESTful API. Secure authentication."
+"Node.js eCommerce backend: Manage products, authenticate users, process orders. Built with Node.js, Express, MongoDB. RESTful API. Secure authentication."
 
 Product Management: Implement CRUD operations for managing products, including creation, retrieval, updating, and deletion.
 User Authentication: Provide secure user authentication using JSON Web Tokens (JWT), allowing users to register, log in, and access protected routes.
