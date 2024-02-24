@@ -7,11 +7,13 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const dbConnect = require('./config/dbCommect');
 const authRout = require('./routes/authRout')
+const cokieParser = require('cookie-parser')// to refresh token
 // const authRout = require('./routes/authRout')
 // const authRout = require('./routes/authRout')
 // const authRout = require('./routes/authRout')
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
+app.use(cokieParser())
 
 
 
