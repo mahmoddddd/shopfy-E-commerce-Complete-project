@@ -5,9 +5,10 @@ const generateToken = require("../config/jwtToken")
 const generateRefreshToken = require("../config/refreshToken")
 const validateMongoDbId = require('../utils/validateMongodbId')
 const { CLIENT_RENEG_LIMIT } = require('tls')
-
-
+const crypto = require('crypto')
+const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
+const sendEmail = require('./emailCtrl')
 
 
 // creat new user 
@@ -23,6 +24,7 @@ const creatUser = asyncHandler(async (req, res, next) => {
     }
 
 });
+
 
 // login user 
 const loginUser = asyncHandler(async (req, res) => {
@@ -164,7 +166,7 @@ const updateUser = asyncHandler(async (req, res) => {
 
                 email: req.body.email,
                 mobile: req.body.mobile,
-                password: req.body.password,
+                //   password: req.body.password,
             },
             {
                 new: true
@@ -174,7 +176,6 @@ const updateUser = asyncHandler(async (req, res) => {
             throw new Error('user not found')
         }
         res.status(200).json(updatedUser)
-        res.status(200).json('user has been updated deleted')
 
     } catch (error) {
         throw new Error(error)
@@ -265,6 +266,51 @@ const allBlockedUsers = asyncHandler(async (req, res) => {
 
 
 
+const updatePassword = asyncHandler(async (req, res) => {
+    const { _id } = req.user;
+    const { password } = req.body;
+    validateMongoDbId(_id);
+    const user = await User.findById(_id);
+    if (password) {
+        user.password = password;
+        const updatedPassword = await user.save()
+        res.json(updatedPassword)
+    } else {
+        res.json(user);
+    }
+
+});
+
+
+
+
+const forgotPasswordToken = asyncHandler(async (req, res) => {
+    const { email } = req.body;
+    const user = await UYser.findOne({ email })
+    if (!user) {
+        throw new Error('user not found this email ')
+
+    }
+
+    try {
+        const tioken = await user.creatPasswordResetToken()
+        await user.save();
+        const resetUrl = `Hi please folloe this link to reset password > link valid tell 30 minits from now <a href="http:localhost:4000/api/user/rest-password/${token} "></a>`
+        const data = {
+            to: email,
+            subject: "forgot passwordLink",
+            html: resetUrl,
+            text: "Hello user"
+        }
+        sendEmail(data)
+        res.json(token)
+    } catch (error) {
+        throw new Error(error)
+
+    }
+
+
+})
 
 module.exports = {
     creatUser,
@@ -276,10 +322,9 @@ module.exports = {
     blockUser,
     unBlockUser,
     allBlockedUsers,
-    handelerRefreshtoken
-
-    , logoutUser
-
+    handelerRefreshtoken,
+    logoutUser,
+    updatePassword, forgotPasswordToken
 
 
 
