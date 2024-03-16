@@ -47,16 +47,16 @@ var userSchema = new mongoose.Schema({
     ],
     isBlocked: {
         type: Boolean,
-        default: false
+        default: false,
     },
     refreshToken: {
         type: String,
     },
-    passwordChangedAt: Date, // Field to store the date when the password was last changed
-    passwordResetToken: String, // Field to store the password reset token
-    passwordResetExpires: Date, // Field to store the expiration date of the password reset token
+    passwordChangedAt: Date,
+    passwordResetToken: String,
+    passwordResetExpires: Date,
 }, {
-    timestamps: true  // Automatically adds createdAt and updatedAt fields
+    timestamps: true
 });
 
 // Middleware to hash the password before saving
@@ -76,7 +76,6 @@ userSchema.pre('save', async function (next) {
 userSchema.methods.isPasswordMatched = async function (enteredPassword) {
     return await bcrypt.compare(enteredPassword, this.password);
 };
-
 
 // Method to create a password reset token
 userSchema.methods.createPasswordResetToken = async function () {

@@ -266,6 +266,8 @@ const allBlockedUsers = asyncHandler(async (req, res) => {
 
 
 
+
+// Update user password
 const updatePassword = asyncHandler(async (req, res) => {
     const { _id } = req.user;
     const { password } = req.body;
@@ -273,43 +275,48 @@ const updatePassword = asyncHandler(async (req, res) => {
     const user = await User.findById(_id);
     if (password) {
         user.password = password;
-        const updatedPassword = await user.save()
-        res.json(updatedPassword)
+        await user.save();
+        res.json({ message: "Password updated successfully" });
     } else {
-        res.json(user);
+        res.status(400).json({ error: "Password not provided" });
     }
-
 });
 
-
-
+// Generate and send password reset token
 
 const forgotPasswordToken = asyncHandler(async (req, res) => {
     const { email } = req.body;
-    const user = await UYser.findOne({ email })
-    if (!user) {
-        throw new Error('user not found this email ')
+    if (!email) {
+        throw new Error('Please enter email');
+    }
 
+    const user = await User.findOne({ email });
+    if (!user) {
+        throw new Error('User not found with this email');
     }
 
     try {
-        const tioken = await user.creatPasswordResetToken()
+        const token = await user.createPasswordResetToken();
         await user.save();
-        const resetUrl = `Hi please folloe this link to reset password > link valid tell 30 minits from now <a href="http:localhost:4000/api/user/rest-password/${token} "></a>`
+        const resetUrl = `http://localhost:4000/api/user/reset-password/${token}`;
+
         const data = {
             to: email,
-            subject: "forgot passwordLink",
-            html: resetUrl,
-            text: "Hello user"
-        }
-        sendEmail(data)
-        res.json(token)
+            subject: "Forgot Password - Reset Link",
+            html: `<p>Hi, please follow this <a href="${resetUrl}">link</a> to reset your password.</p>`,
+            text: "Hello user, please use the following link to reset your password: " + resetUrl
+        };
+
+        await sendEmail(data);
+        res.json({ message: `Password reset link sent to Your email : ${email}` });
     } catch (error) {
-        throw new Error(error)
-
+        throw new Error(error.message);
     }
+});
 
-
+const resetPasswoed = asyncHandler(async (req, res) => {
+    const { _id } = req.body
+    validateMongoDbId(_id)
 })
 
 module.exports = {
@@ -324,8 +331,57 @@ module.exports = {
     allBlockedUsers,
     handelerRefreshtoken,
     logoutUser,
-    updatePassword, forgotPasswordToken
-
-
-
+    updatePassword,
+    forgotPasswordToken,
+    resetPasswoed
 }
+
+
+// const updatePassword = asyncHandler(async (req, res) => {
+//     const { _id } = req.user;
+//     const { password } = req.body;
+//     validateMongoDbId(_id);
+//     const user = await User.findById(_id);
+//     if (password) {
+//         user.password = password;
+//         const updatedPassword = await user.save()
+//         res.json(updatedPassword)
+//     } else {
+//         res.json(user);
+//     }
+
+// });
+
+
+
+
+// const forgotPasswordToken = asyncHandler(async (req, res) => {
+//     const { email } = req.body;
+//     if (!email) {
+//         throw new Error('Please enter email')
+//     }
+//     const user = await User.findOne({ email })
+//     if (!user) {
+//         throw new Error('user not found this email ')
+
+//     }
+
+//     try {
+//         const token = await user.createPasswordResetToken()
+//         await user.save();
+//         const resetUrl = `Hi please folloe this link to reset password > link valid tell 30 minits from now <a href="http:localhost:4000/api/user/rest-password/${token} "></a>`
+//         const data = {
+//             to: email,
+//             subject: "forgot passwordLink",
+//             html: resetUrl,
+//             text: "Hello user"
+//         }
+//         sendEmail(data)
+//         res.json(token)
+//     } catch (error) {
+//         throw new Error(error)
+
+//     }
+
+
+// })

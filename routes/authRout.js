@@ -14,14 +14,16 @@ const {
     handelerRefreshtoken,
     logoutUser,
     updatePassword,
-    forgotPasswordToken
+    forgotPasswordToken,
+    resetPasswoed
 } = require("../controller/userCtrl");
 
 const { authMiddleware, isAdmin } = require("../middlewares/authMiddleware");
 
 router.post('/register', creatUser);
-router.put('/password', authMiddleware, updatePassword);
+router.put('/change-password', authMiddleware, updatePassword);
 router.post('/forgot-password-token', forgotPasswordToken);
+router.put('/reset-password', resetPasswoed);
 
 router.post('/login', loginUser);
 router.get('/getBlockedUsers', authMiddleware, isAdmin, allBlockedUsers);
