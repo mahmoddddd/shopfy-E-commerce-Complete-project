@@ -308,15 +308,26 @@ const forgotPasswordToken = asyncHandler(async (req, res) => {
         };
 
         await sendEmail(data);
-        res.json({ message: `Password reset link sent to Your email : ${email}` });
+        res.json({ message: `Password reset link sent to Your email : ${email} and token is ${token}` });
     } catch (error) {
         throw new Error(error.message);
     }
 });
 
 const resetPasswoed = asyncHandler(async (req, res) => {
-    const { _id } = req.body
-    validateMongoDbId(_id)
+    const { password } = req.body;
+    const { token } = req.params;
+    const hashedToken = crypto.createHash("sha256").update(token).digest('hex')
+    const user = await User.findOne({
+        passwordResetToken: hashedToken,
+        passwordResetExpires: { $gt: Date.now() }
+    })
+    if (!user) throw new Error("Token expired");
+    user.password = password;
+    user.passwordResetExpires = undefined;
+    user.passwordResetToken = undefined;
+    await user.save()
+    res.json(user)
 })
 
 module.exports = {

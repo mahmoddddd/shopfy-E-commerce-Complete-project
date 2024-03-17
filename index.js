@@ -10,7 +10,7 @@ const dbConnect = require('./config/dbCommect');
 const authRout = require('./routes/authRout')
 const cokieParser = require('cookie-parser')// to refresh token
 const productRout = require('./routes/productRout')
-// const authRout = require('./routes/authRout')
+const blogRoutes = require('./routes/blogRoutes')
 // const authRout = require('./routes/authRout')
 
 app.use(morgan("dev"))
@@ -23,6 +23,7 @@ app.use(cokieParser())
 
 app.use('/api/user', authRout)
 app.use('/api/product', productRout)
+app.use('/api/blog', blogRoutes)
 
 app.use(notFound)
 app.use(errorHandler)

@@ -23,7 +23,7 @@ const { authMiddleware, isAdmin } = require("../middlewares/authMiddleware");
 router.post('/register', creatUser);
 router.put('/change-password', authMiddleware, updatePassword);
 router.post('/forgot-password-token', forgotPasswordToken);
-router.put('/reset-password', resetPasswoed);
+router.put('/reset-password/:token', resetPasswoed);
 
 router.post('/login', loginUser);
 router.get('/getBlockedUsers', authMiddleware, isAdmin, allBlockedUsers);
